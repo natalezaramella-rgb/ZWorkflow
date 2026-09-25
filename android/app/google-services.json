@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390851858388",
+    "project_id": "zworkflow-zaramell",
+    "storage_bucket": "zworkflow-zaramell.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390851858388:android:822f2d162727824a7a5041",
+        "android_client_info": {
+          "package_name": "com.zaramella.zworkflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK66SoZkLzFHAyq1bbOCELszfAPa5rBIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

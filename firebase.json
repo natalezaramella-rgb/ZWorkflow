@@ -1,0 +1,26 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "zworkflow-zaramell",
+          "appId": "1:390851858388:android:822f2d162727824a7a5041",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "zworkflow-zaramell",
+          "configurations": {
+            "android": "1:390851858388:android:822f2d162727824a7a5041",
+            "ios": "1:390851858388:ios:d0eb9eb4ef28a9407a5041"
+          }
+        }
+      }
+    }
+  }
+}
