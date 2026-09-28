@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:z_workflow/l10n/app_localizations.dart';
 
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/budget.dart';
 import '../bloc/budget_bloc.dart';
@@ -22,21 +23,52 @@ class BudgetPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          Future<void> onRefresh() async {
+            try {
+              final authBloc = context.read<AuthBloc>();
+              final authState = authBloc.state;
+              final user =
+                  authState is AuthAuthenticated ? authState.user : null;
+              final tenantId = user?.tenantId ?? 'tenant_zaramella';
+              context.read<BudgetBloc>().add(BudgetLoadAll(
+                    tenantId: tenantId,
+                    year: DateTime.now().year,
+                  ));
+            } catch (_) {}
+          }
+
           if (state is BudgetLoaded) {
             if (state.statuses.isEmpty) {
-              return Center(
-                child: Text(l10n.noResults,
-                    style: TextStyle(color: AppColors.textSecondaryLight)),
+              return RefreshIndicator(
+                onRefresh: onRefresh,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: Center(
+                        child: Text(l10n.noResults,
+                            style:
+                                TextStyle(color: AppColors.textSecondaryLight)),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
 
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.statuses.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                return _BudgetCard(status: state.statuses[index]);
-              },
+            return RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: state.statuses.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  return _BudgetCard(status: state.statuses[index]);
+                },
+              ),
             );
           }
 

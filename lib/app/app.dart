@@ -7,9 +7,12 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/budget/data/budget_repository.dart';
+import '../features/budget/presentation/bloc/budget_bloc.dart';
 import '../features/organization/data/organization_repository.dart';
 import '../features/purchase_request/data/purchase_request_repository.dart';
+import '../features/purchase_request/presentation/bloc/request_list_bloc.dart';
 import '../features/workflow/data/workflow_repository.dart';
+import '../features/workflow/presentation/bloc/inbox_bloc.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -29,6 +32,9 @@ class ZWorkflowApp extends StatefulWidget {
     this.workflowRepository,
     this.budgetRepository,
     this.authBloc,
+    this.requestListBloc,
+    this.inboxBloc,
+    this.budgetBloc,
     this.locale,
   });
 
@@ -52,6 +58,15 @@ class ZWorkflowApp extends StatefulWidget {
 
   /// Optional injected [AuthBloc]. If null, one will be created.
   final AuthBloc? authBloc;
+
+  /// Optional injected [RequestListBloc].
+  final RequestListBloc? requestListBloc;
+
+  /// Optional injected [InboxBloc].
+  final InboxBloc? inboxBloc;
+
+  /// Optional injected [BudgetBloc].
+  final BudgetBloc? budgetBloc;
 
   @override
   State<ZWorkflowApp> createState() => _ZWorkflowAppState();
@@ -86,7 +101,12 @@ class _ZWorkflowAppState extends State<ZWorkflowApp> {
         AuthBloc(authRepository: _authRepository)
       ..add(const AuthCheckRequested());
 
-    _router = createRouter(_authBloc);
+    _router = createRouter(
+      _authBloc,
+      requestListBloc: widget.requestListBloc,
+      inboxBloc: widget.inboxBloc,
+      budgetBloc: widget.budgetBloc,
+    );
   }
 
   @override

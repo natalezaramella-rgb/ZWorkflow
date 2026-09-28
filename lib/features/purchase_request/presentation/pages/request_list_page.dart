@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:z_workflow/l10n/app_localizations.dart';
 
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/enums/request_enums.dart';
 import '../../domain/models/purchase_request.dart';
@@ -24,29 +25,59 @@ class RequestListPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          Future<void> onRefresh() async {
+            try {
+              final authBloc = context.read<AuthBloc>();
+              final authState = authBloc.state;
+              final user =
+                  authState is AuthAuthenticated ? authState.user : null;
+              final tenantId = user?.tenantId ?? 'tenant_zaramella';
+              context
+                  .read<RequestListBloc>()
+                  .add(RequestListLoadAll(tenantId));
+            } catch (_) {}
+          }
+
           if (state is RequestListLoaded) {
             if (state.requests.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              return RefreshIndicator(
+                onRefresh: onRefresh,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   children: [
-                    Icon(Icons.description_outlined,
-                        size: 64, color: AppColors.textSecondaryLight),
-                    const SizedBox(height: 16),
-                    Text(l10n.noResults,
-                        style: TextStyle(color: AppColors.textSecondaryLight)),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.description_outlined,
+                                size: 64, color: AppColors.textSecondaryLight),
+                            const SizedBox(height: 16),
+                            Text(l10n.noResults,
+                                style: TextStyle(
+                                    color: AppColors.textSecondaryLight)),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
             }
 
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.requests.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                return _RequestCard(request: state.requests[index]);
-              },
+            return RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: state.requests.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  return _RequestCard(request: state.requests[index]);
+                },
+              ),
             );
           }
 
